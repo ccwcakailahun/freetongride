@@ -8,6 +8,8 @@ import 'state/driver_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // Screens are designed for portrait phones.
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark));
   final session = Session(role: UserRole.driver);
   runApp(

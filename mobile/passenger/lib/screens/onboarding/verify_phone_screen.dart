@@ -43,7 +43,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     return Scaffold(
       body: FtrBackground(
         child: SafeArea(
-          child: ListView(
+          child: FtrFitScreen(
             padding: EdgeInsets.zero,
             children: [
               Stack(children: [

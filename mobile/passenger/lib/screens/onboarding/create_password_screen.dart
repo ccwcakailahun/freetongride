@@ -61,7 +61,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             child: Icon(Icons.check_rounded, color: ok ? FtrColors.green : FtrColors.faint, size: 22),
           ),
           const SizedBox(width: 14),
-          Text(text, style: FtrText.body.copyWith(fontSize: 15.5, color: ok ? FtrColors.ink : FtrColors.body)),
+          Expanded(child: Text(text, style: FtrText.body.copyWith(fontSize: 15.5, color: ok ? FtrColors.ink : FtrColors.body))),
         ]),
       );
 
@@ -70,7 +70,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     return Scaffold(
       body: FtrBackground(
         child: SafeArea(
-          child: ListView(
+          child: FtrFitScreen(
             padding: const EdgeInsets.fromLTRB(22, 4, 22, 24),
             children: [
               const Align(alignment: Alignment.centerLeft, child: FtrBackButton(label: 'Back')),

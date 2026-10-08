@@ -33,7 +33,7 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
     return Scaffold(
       body: FtrBackground(
         child: SafeArea(
-          child: ListView(
+          child: FtrFitScreen(
             padding: EdgeInsets.zero,
             children: [
               const SizedBox(height: 18),

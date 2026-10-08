@@ -35,7 +35,7 @@ const DOC_LABEL: Record<string, string> = {
                 <tr class="click" (click)="open(d.id)">
                   <td><div class="who"><ftr-avatar [name]="d.fullName" [photo]="d.photoUrl" /><div><b>{{ d.fullName }}</b><span>{{ d.phone | phone }}</span></div></div></td>
                   <td><ftr-driver-status [status]="d.status" /></td>
-                  <td><b>{{ d.serviceName ?? '—' }}</b><div class="small">{{ d.vehicle || 'No vehicle yet' }}</div></td>
+                  <td>@if (!d.phoneVerified) { <span class="pill orange" style="margin-bottom:4px">Phone unverified</span> }<b>{{ d.serviceName ?? '—' }}</b><div class="small">{{ d.vehicle || 'No vehicle yet' }}</div></td>
                   <td>@if (d.isOnline) { <span class="pill green">Online</span> } @else { <span class="small">{{ d.lastSeenAt | ago }}</span> }</td>
                   <td class="right num">{{ d.completedTrips }}</td>
                   <td class="right num">★ {{ d.rating.toFixed(1) }}</td>
@@ -60,6 +60,12 @@ const DOC_LABEL: Record<string, string> = {
           <button class="close" (click)="detail.set(null)" aria-label="Close">×</button>
         </div>
         <div class="drawer-body">
+          @if (!det.driver.phoneVerified) {
+            <div class="card pad verify">
+              <div><b>Phone not verified.</b> <span class="muted">This driver has not entered the SMS code, so they cannot sign in.</span></div>
+              <button class="btn" [disabled]="busy()" (click)="verifyPhone(det)">Mark phone verified</button>
+            </div>
+          }
           @if (det.profile.rejectReason) { <div class="error-box">Last rejection: {{ det.profile.rejectReason }}</div> }
           <div class="card pad">
             <h3>Vehicle</h3>
@@ -115,6 +121,7 @@ const DOC_LABEL: Record<string, string> = {
     .doc { display: grid; gap: 6px; color: var(--ink); font-size: 12.5px; }
     .doc img, .doc .pdf { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); background: #f1f4fa; display: grid; place-items: center; font-weight: 800; color: var(--muted); }
     .decide { display: grid; gap: 10px; }
+    .verify { display: flex; gap: 12px; align-items: center; justify-content: space-between; border-left: 4px solid var(--orange); }
     .decide .row { display: flex; gap: 10px; justify-content: flex-end; }
     .line { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
     .line .grow { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -175,6 +182,19 @@ export class DriversPage implements OnInit {
     this.busy.set(true);
     try {
       this.detail.set(await this.api.reviewDriver(det.driver.id, approve, approve ? undefined : this.reason.trim()));
+      this.load();
+    } catch (e) {
+      this.error.set(errorText(e));
+    } finally {
+      this.busy.set(false);
+    }
+  }
+
+  async verifyPhone(det: DriverDetail) {
+    this.busy.set(true);
+    try {
+      await this.api.verifyPhone(det.driver.id);
+      await this.open(det.driver.id);
       this.load();
     } catch (e) {
       this.error.set(errorText(e));

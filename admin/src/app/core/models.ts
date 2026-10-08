@@ -51,7 +51,7 @@ export interface Dashboard {
 export interface DriverRow {
   id: string; fullName: string; phone: string; email?: string; photoUrl?: string; status: DriverStatus; serviceName?: string;
   vehicle: string; plateNumber?: string; isOnline: boolean; rating: number; ratingCount: number; completedTrips: number;
-  walletBalance: number; isActive: boolean; createdAt: string; lastSeenAt?: string;
+  walletBalance: number; isActive: boolean; createdAt: string; lastSeenAt?: string; phoneVerified: boolean;
 }
 export interface DriverDocument { id: string; type: string; fileUrl: string; approved?: boolean; note?: string; createdAt: string; }
 export interface DriverProfile {

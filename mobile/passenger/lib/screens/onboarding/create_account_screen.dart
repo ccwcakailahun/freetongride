@@ -59,7 +59,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     return Scaffold(
       body: FtrBackground(
         child: SafeArea(
-          child: ListView(
+          child: FtrFitScreen(
             padding: EdgeInsets.zero,
             children: [
               Stack(children: [

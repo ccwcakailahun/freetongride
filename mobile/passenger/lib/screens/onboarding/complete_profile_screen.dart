@@ -110,7 +110,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     return Scaffold(
       body: FtrBackground(
         child: SafeArea(
-          child: ListView(
+          child: FtrFitScreen(
             padding: const EdgeInsets.fromLTRB(22, 4, 22, 24),
             children: [
               Row(children: [

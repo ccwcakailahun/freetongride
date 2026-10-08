@@ -60,6 +60,13 @@ public class AdminController(AdminService admin) : ControllerBase
     public Task<PagedResult<AdminPassengerRow>> Passengers([FromQuery] string? search, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default) =>
         admin.PassengersAsync(search, Math.Max(1, page), Math.Clamp(pageSize, 1, 100), ct);
 
+    [HttpPost("users/{id:guid}/verify-phone")]
+    public async Task<IActionResult> VerifyPhone(Guid id, CancellationToken ct)
+    {
+        await admin.VerifyPhoneAsync(id, ct);
+        return NoContent();
+    }
+
     [HttpPost("users/{id:guid}/active")]
     public async Task<IActionResult> SetActive(Guid id, ActiveRequest r, CancellationToken ct)
     {

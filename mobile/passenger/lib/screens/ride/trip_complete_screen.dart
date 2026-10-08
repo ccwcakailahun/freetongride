@@ -151,7 +151,7 @@ class _TripCompleteScreenState extends State<TripCompleteScreen> {
                         Row(children: [
                           const Icon(Icons.schedule_rounded, size: 18, color: FtrColors.blue),
                           const SizedBox(width: 8),
-                          Text('$minutes min • ${r.distanceKm.toStringAsFixed(1)} km', style: FtrText.small.copyWith(color: FtrColors.body)),
+                          Flexible(child: Text('$minutes min • ${r.distanceKm.toStringAsFixed(1)} km', style: FtrText.small.copyWith(color: FtrColors.body))),
                         ]),
                         const Divider(height: 20),
                         Text('Total fare', style: FtrText.bodyMuted),
@@ -298,7 +298,7 @@ class _RateCard extends StatelessWidget {
             for (var i = 1; i <= 5; i++)
               GestureDetector(
                 onTap: rated ? null : () => onStars(i),
-                child: Icon(Icons.star_rounded, size: 27, color: i <= stars ? FtrColors.star : const Color(0xFFDDE2EA)),
+                child: Icon(Icons.star_rounded, size: 25, color: i <= stars ? FtrColors.star : const Color(0xFFDDE2EA)),
               ),
           ],
         ),

@@ -19,7 +19,7 @@ public record ServiceSplit(string Service, int Rides);
 public record AdminDriverRow(
     Guid Id, string FullName, string Phone, string? Email, string? PhotoUrl, DriverStatus Status, string? ServiceName,
     string Vehicle, string? PlateNumber, bool IsOnline, double Rating, int RatingCount, int CompletedTrips,
-    decimal WalletBalance, bool IsActive, DateTime CreatedAt, DateTime? LastSeenAt);
+    decimal WalletBalance, bool IsActive, DateTime CreatedAt, DateTime? LastSeenAt, bool PhoneVerified);
 public record AdminDriverDetail(AdminDriverRow Driver, DriverProfileDto Profile, IReadOnlyList<RideDto> RecentRides);
 public record AdminPassengerRow(Guid Id, string FullName, string Phone, string? Email, string? PhotoUrl, bool PhoneVerified, bool IsActive, double Rating, decimal WalletBalance, int Rides, DateTime CreatedAt, DateTime? LastLoginAt);
 public record AdminRideDetail(RideDto Ride, IReadOnlyList<BidDto> Bids, IReadOnlyList<MessageDto> Messages, IReadOnlyList<SosDto> Sos);
@@ -195,6 +195,14 @@ public class AdminService(IAppDbContext db, IRealtime realtime)
         return new PagedResult<AdminPassengerRow>(items, total, page, pageSize);
     }
 
+    /// <summary>Marks a phone as verified by hand, for people who could not receive the SMS code.</summary>
+    public async Task VerifyPhoneAsync(Guid userId, CancellationToken ct)
+    {
+        var u = await db.Users.FirstOrDefaultAsync(x => x.Id == userId, ct) ?? throw AppException.NotFound("User not found.");
+        u.PhoneVerified = true;
+        await db.SaveChangesAsync(ct);
+    }
+
     public async Task SetUserActiveAsync(Guid userId, bool active, CancellationToken ct)
     {
         var u = await db.Users.FirstOrDefaultAsync(x => x.Id == userId, ct) ?? throw AppException.NotFound("User not found.");
@@ -300,7 +308,7 @@ public class AdminService(IAppDbContext db, IRealtime realtime)
     private static AdminDriverRow ToRow(DriverProfile d) => new(
         d.UserId, d.User.FullName, d.User.Phone, d.User.Email, d.User.PhotoUrl, d.Status, d.Service?.Name, d.VehicleSummary,
         d.PlateNumber, d.IsOnline, d.User.Rating, d.User.RatingCount, d.CompletedTrips, d.User.WalletBalance, d.User.IsActive,
-        d.CreatedAt, d.LastSeenAt);
+        d.CreatedAt, d.LastSeenAt, d.User.PhoneVerified);
 
     private static SosDto ToDto(SosAlert s) => new(
         s.Id, s.RideId, s.Ride.Code, s.Status, s.Lat, s.Lng, s.Message, s.RaisedBy.FullName, s.RaisedBy.Phone, s.RaisedBy.Role,

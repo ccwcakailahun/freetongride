@@ -131,6 +131,7 @@ export class AdminApi {
 
   passengers = (q: { search?: string; page?: number; pageSize?: number }) =>
     firstValueFrom(this.http.get<Paged<PassengerRow>>(`${this.base}/passengers`, { params: params(q) }));
+  verifyPhone = (id: string) => firstValueFrom(this.http.post<void>(`${this.base}/users/${id}/verify-phone`, {}));
   setActive = (id: string, active: boolean) => firstValueFrom(this.http.post<void>(`${this.base}/users/${id}/active`, { active }));
 
   sos = (openOnly = false) => firstValueFrom(this.http.get<Sos[]>(`${this.base}/sos`, { params: params({ openOnly }) }));

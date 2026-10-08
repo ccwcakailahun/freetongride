@@ -30,10 +30,8 @@ class _OtpScreenState extends State<OtpScreen> {
   void initState() {
     super.initState();
     _startTimer();
-    // Development builds get the code back from the API; show it so testers are not stuck without SMS.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_sent.devCode != null && mounted) showToast(context, 'Development code: ${_sent.devCode}', icon: Icons.developer_mode_rounded);
-    });
+    // Until SMS is connected the server returns the code (test mode); fill the boxes so the person only taps Verify.
+    if (_sent.devCode != null) _code.text = _sent.devCode!;
   }
 
   void _startTimer() {
@@ -50,11 +48,11 @@ class _OtpScreenState extends State<OtpScreen> {
       setState(() {
         _sent = s;
         _seconds = s.resendAfterSeconds;
-        _code.clear();
+        _code.text = s.devCode ?? '';
         _error = false;
       });
       _startTimer();
-      if (mounted) showToast(context, s.devCode != null ? 'New code sent. Development code: ${s.devCode}' : 'We sent you a new code.');
+      if (mounted) showToast(context, s.devCode != null ? 'New code filled in for you.' : 'We sent you a new code.');
     } catch (e) {
       if (mounted) showError(context, e);
     }
@@ -102,7 +100,7 @@ class _OtpScreenState extends State<OtpScreen> {
     return Scaffold(
       body: FtrBackground(
         child: SafeArea(
-          child: ListView(
+          child: FtrFitScreen(
             padding: const EdgeInsets.fromLTRB(22, 4, 22, 24),
             children: [
               const Align(alignment: Alignment.centerLeft, child: FtrBackButton()),
@@ -117,6 +115,10 @@ class _OtpScreenState extends State<OtpScreen> {
               Text(prettyPhone(_sent.phone), textAlign: TextAlign.center, style: FtrText.h3.copyWith(fontSize: 20)),
               const SizedBox(height: 26),
               FtrCodeInput(controller: _code, error: _error, onCompleted: _verify, onChanged: (_) => setState(() => _error = false)),
+              if (_sent.devCode != null) ...[
+                const SizedBox(height: 14),
+                const _AutoFilledNote(),
+              ],
               const SizedBox(height: 24),
               Text.rich(
                 TextSpan(children: [
@@ -145,4 +147,20 @@ class _OtpScreenState extends State<OtpScreen> {
       ),
     );
   }
+}
+
+/// Shown while SMS is not connected: the code was filled in automatically.
+class _AutoFilledNote extends StatelessWidget {
+  const _AutoFilledNote();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(color: FtrColors.greenSoft, borderRadius: BorderRadius.circular(14)),
+        child: Row(children: [
+          const Icon(Icons.auto_awesome_rounded, color: FtrColors.green, size: 20),
+          const SizedBox(width: 10),
+          Expanded(child: Text('We filled in your code for you. Tap Verify & Continue.', style: FtrText.label.copyWith(color: FtrColors.green))),
+        ]),
+      );
 }

@@ -13,6 +13,7 @@ export 'src/ui/brand.dart';
 export 'src/ui/buttons.dart';
 export 'src/ui/feedback.dart';
 export 'src/ui/fields.dart';
+export 'src/ui/fit_screen.dart';
 export 'src/ui/format.dart';
 export 'src/ui/map.dart';
 export 'src/ui/nav.dart';

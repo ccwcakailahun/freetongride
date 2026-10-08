@@ -59,7 +59,7 @@ class _SignInScreenState extends State<SignInScreen> {
           children: [
             Positioned(left: 0, right: 0, bottom: 0, child: _BottomWave()),
             SafeArea(
-              child: ListView(
+              child: FtrFitScreen(
                 padding: EdgeInsets.zero,
                 children: [
                   const SizedBox(height: 18),

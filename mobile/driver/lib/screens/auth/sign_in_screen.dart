@@ -51,7 +51,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       body: FtrBackground(
         child: SafeArea(
-          child: ListView(padding: EdgeInsets.zero, children: [
+          child: FtrFitScreen(padding: EdgeInsets.zero, children: [
             const SizedBox(height: 18),
             const Center(child: FtrBrandHeader(size: FtrBrandSize.medium, subtitle: 'Driver  •  Earn on your schedule')),
             const FtrHero('hero_signin.png', height: 230),
@@ -149,7 +149,7 @@ class _DriverSignUpScreenState extends State<DriverSignUpScreen> {
     return Scaffold(
       body: FtrBackground(
         child: SafeArea(
-          child: ListView(padding: const EdgeInsets.fromLTRB(22, 4, 22, 24), children: [
+          child: FtrFitScreen(padding: const EdgeInsets.fromLTRB(22, 4, 22, 24), children: [
             const Align(alignment: Alignment.centerLeft, child: FtrBackButton()),
             const Center(child: FtrBrandHeader(size: FtrBrandSize.medium)),
             const SizedBox(height: 18),
@@ -227,9 +227,8 @@ class _DriverOtpScreenState extends State<DriverOtpScreen> {
   void initState() {
     super.initState();
     _tick();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_sent.devCode != null && mounted) showToast(context, 'Development code: ${_sent.devCode}', icon: Icons.developer_mode_rounded);
-    });
+    // Until SMS is connected the server returns the code (test mode); fill the boxes so the driver only taps Verify.
+    if (_sent.devCode != null) _code.text = _sent.devCode!;
   }
 
   void _tick() {
@@ -259,9 +258,10 @@ class _DriverOtpScreenState extends State<DriverOtpScreen> {
       setState(() {
         _sent = s;
         _seconds = s.resendAfterSeconds;
+        _code.text = s.devCode ?? '';
       });
       _tick();
-      if (mounted && s.devCode != null) showToast(context, 'Development code: ${s.devCode}');
+      if (mounted && s.devCode != null) showToast(context, 'New code filled in for you.');
     } catch (e) {
       if (mounted) showError(context, e);
     }
@@ -279,7 +279,7 @@ class _DriverOtpScreenState extends State<DriverOtpScreen> {
     return Scaffold(
       body: FtrBackground(
         child: SafeArea(
-          child: ListView(padding: const EdgeInsets.fromLTRB(22, 4, 22, 24), children: [
+          child: FtrFitScreen(padding: const EdgeInsets.fromLTRB(22, 4, 22, 24), children: [
             const Align(alignment: Alignment.centerLeft, child: FtrBackButton()),
             const Center(child: FtrBrandHeader(size: FtrBrandSize.medium)),
             SizedBox(height: 210, child: ftrImage('illus_otp.png', fit: BoxFit.contain)),
@@ -290,6 +290,18 @@ class _DriverOtpScreenState extends State<DriverOtpScreen> {
             Text(prettyPhone(_sent.phone), textAlign: TextAlign.center, style: FtrText.h3.copyWith(fontSize: 20)),
             const SizedBox(height: 24),
             FtrCodeInput(controller: _code, onCompleted: _verify),
+            if (_sent.devCode != null) ...[
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(color: FtrColors.greenSoft, borderRadius: BorderRadius.circular(14)),
+                child: Row(children: [
+                  const Icon(Icons.auto_awesome_rounded, color: FtrColors.green, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text('We filled in your code for you. Tap Verify & Continue.', style: FtrText.label.copyWith(color: FtrColors.green))),
+                ]),
+              ),
+            ],
             const SizedBox(height: 20),
             Center(
               child: _seconds > 0

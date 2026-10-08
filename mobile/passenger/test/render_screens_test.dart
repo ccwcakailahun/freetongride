@@ -91,7 +91,8 @@ void main() {
 
   for (final entry in screens.entries) {
     testWidgets('render ${entry.key}', (tester) async {
-      tester.view.physicalSize = const Size(412 * 2.5, 915 * 2.5);
+      const w = int.fromEnvironment('W', defaultValue: 412), h = int.fromEnvironment('H', defaultValue: 915);
+      tester.view.physicalSize = Size(w * 2.5, h * 2.5);
       tester.view.devicePixelRatio = 2.5;
       addTearDown(tester.view.reset);
 
