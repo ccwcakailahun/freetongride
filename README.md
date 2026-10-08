@@ -50,7 +50,9 @@ npm install
 npm start
 ```
 
-Opens on `http://localhost:4200`.
+Opens on `http://localhost:4210`. Sign in with the development admin account from `appsettings.Development.json`.
+
+What the admin team can do: watch today's numbers and every active ride, see drivers move on the live map, respond to SOS alerts (a red banner appears on every page), approve or reject drivers after checking their documents, suspend drivers or passengers, mark driver payouts as paid, read the wallet ledger, and edit ride types, fares and commission.
 
 ### Mobile apps
 
@@ -60,7 +62,21 @@ flutter pub get
 flutter run
 ```
 
-The Android emulator reaches the API at `http://10.0.2.2:5080`. For a real phone, run with `--dart-define=API_URL=http://<your-PC-IP>:5080`.
+The driver app is in `mobile/driver` and runs the same way. The Android emulator reaches the API at `http://10.0.2.2:5080`. For a real phone, run with `--dart-define=API_URL=http://<your-PC-IP>:5080`.
+
+To review the screens without a phone, render them to PNG files in `build/screens/`:
+
+```bash
+flutter test test/render_screens_test.dart
+```
+
+### Installable APKs
+
+The **Build mobile apps** workflow in GitHub Actions builds `FreeTongRide-passenger.apk` and `FreeTongRide-driver.apk` on every push to `main` that touches `mobile/`. Download them from the run's Artifacts. Before installing on phones, set the repository variable `API_URL` to the public address of the API. Run the workflow manually with "iOS" ticked to check that the iOS apps compile.
+
+### Maps
+
+Maps use OpenStreetMap. Its free tile servers are fine for development and light use. For production, use a tile provider with a key (MapTiler, Stadia or similar): set `MAP_TILES_URL` (apps, as a dart-define or repository variable) and `window.FTR_TILE_URL` (admin, in `index.html`).
 
 ## Production settings
 
