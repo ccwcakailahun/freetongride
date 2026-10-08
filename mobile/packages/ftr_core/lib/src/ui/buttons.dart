@@ -38,7 +38,7 @@ class FtrPrimaryButton extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: gradient,
             borderRadius: BorderRadius.circular(height / 2),
-            boxShadow: enabled ? ftrButtonShadow : null,
+            boxShadow: enabled ? [BoxShadow(color: gradient.colors.last.withValues(alpha: 0.28), blurRadius: 18, offset: const Offset(0, 8))] : null,
           ),
           child: Material(
             color: Colors.transparent,
