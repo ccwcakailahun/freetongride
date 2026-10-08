@@ -1,0 +1,74 @@
+# FreeTongRide: admin panel (static) + API reverse proxy. Served on the IP until a domain exists.
+limit_req_zone $binary_remote_addr zone=ftr_auth:10m rate=20r/m;
+
+map $http_upgrade $ftr_connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name freetongride.dorwei.com;
+
+    root /var/www/freetongride-admin;
+    index index.html;
+    client_max_body_size 10m;
+
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://tile.openstreetmap.org; connect-src 'self' ws: wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
+
+    # No dotfiles, ever.
+    location ~ /\. { deny all; return 404; }
+
+    location = /health { proxy_pass http://127.0.0.1:5080; access_log off; }
+
+    location /api/auth/ {
+        limit_req zone=ftr_auth burst=10 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:5080;
+        include /etc/nginx/snippets/freetongride-proxy.conf;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:5080;
+        include /etc/nginx/snippets/freetongride-proxy.conf;
+    }
+
+    location /hubs/ {
+        proxy_pass http://127.0.0.1:5080;
+        include /etc/nginx/snippets/freetongride-proxy.conf;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $ftr_connection_upgrade;
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
+
+    location /uploads/ {
+        proxy_pass http://127.0.0.1:5080;
+        include /etc/nginx/snippets/freetongride-proxy.conf;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; sandbox" always;
+    }
+
+    # Hashed build files can be cached for a long time.
+    location ~* \.(?:js|css|woff2?|png|jpg|svg|ico)$ {
+        try_files $uri =404;
+        expires 30d;
+        add_header Cache-Control "public, immutable" always;
+        add_header X-Content-Type-Options "nosniff" always;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Frame-Options "DENY" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://tile.openstreetmap.org; connect-src 'self' ws: wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
+    }
+}

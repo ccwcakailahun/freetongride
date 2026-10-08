@@ -1,0 +1,41 @@
+[Unit]
+Description=FreeTongRide API (.NET)
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=freetongride
+Group=freetongride
+WorkingDirectory=/opt/freetongride/api
+ExecStart=/usr/bin/dotnet /opt/freetongride/api/FreeTongRide.Api.dll
+EnvironmentFile=/etc/freetongride/api.env
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5080
+Environment=ASPNETCORE_WEBROOT=/var/lib/freetongride/wwwroot
+Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1
+Environment=DOTNET_NOLOGO=1
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+MemoryMax=768M
+
+# Sandboxing
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/freetongride
+CapabilityBoundingSet=
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

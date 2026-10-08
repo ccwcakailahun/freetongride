@@ -1,0 +1,6 @@
+[Unit]
+Description=FreeTongRide daily database backup
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/freetongride-backup.sh

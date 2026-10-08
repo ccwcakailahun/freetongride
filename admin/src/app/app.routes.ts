@@ -18,6 +18,7 @@ export const routes: Routes = [
       { path: 'safety', loadComponent: () => import('./pages/safety').then((m) => m.SafetyPage), title: 'Safety · FreeTongRide Admin' },
       { path: 'payouts', loadComponent: () => import('./pages/payouts').then((m) => m.PayoutsPage), title: 'Payouts · FreeTongRide Admin' },
       { path: 'transactions', loadComponent: () => import('./pages/transactions').then((m) => m.TransactionsPage), title: 'Transactions · FreeTongRide Admin' },
+      { path: 'account', loadComponent: () => import('./pages/account').then((m) => m.AccountPage), title: 'My account · FreeTongRide Admin' },
       { path: 'fares', loadComponent: () => import('./pages/fares').then((m) => m.FaresPage), title: 'Ride types & fares · FreeTongRide Admin' },
     ],
   },

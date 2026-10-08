@@ -29,8 +29,10 @@ interface NavItem { path: string; label: string; icon: string; badge?: () => num
         }
       </nav>
       <div class="me">
-        <div class="avatar">{{ (auth.user()?.fullName ?? 'A') | initials }}</div>
-        <div class="grow"><b>{{ auth.user()?.fullName }}</b><span>Administrator</span></div>
+        <a class="me-link" routerLink="/account" (click)="menuOpen.set(false)" title="My account and password">
+          <div class="avatar">{{ (auth.user()?.fullName ?? 'A') | initials }}</div>
+          <div class="grow"><b>{{ auth.user()?.fullName }}</b><span>My account</span></div>
+        </a>
         <button class="icon-btn" title="Sign out" (click)="auth.logout()"><ftr-icon name="logout" /></button>
       </div>
     </aside>
@@ -74,6 +76,8 @@ interface NavItem { path: string; label: string; icon: string; badge?: () => num
     nav a span { flex: 1; }
     .badge { font-style: normal; background: var(--red); color: #fff; font-size: 11px; font-weight: 800; border-radius: 10px; padding: 1px 7px; }
     .me { display: flex; align-items: center; gap: 10px; padding: 12px 8px 0; border-top: 1px solid #1d2966; }
+    .me-link { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; color: inherit; font-weight: inherit; border-radius: 10px; padding: 4px; }
+    .me-link:hover { background: var(--navy-2); }
     .me .grow { flex: 1; min-width: 0; }
     .me b { color: #fff; display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .me span { font-size: 11.5px; color: #8f9bc7; }

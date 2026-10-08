@@ -80,6 +80,23 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
     await scope.ServiceProvider.GetRequiredService<DbSeeder>().RunAsync();
 
+// Recovery: `dotnet FreeTongRide.Api.dll --reset-admin-password` reads the new password from stdin
+// (so it never appears in the process list or shell history), updates the first admin, and exits.
+if (args.Contains("--reset-admin-password"))
+{
+    var newPassword = Console.In.ReadLine()?.Trim() ?? "";
+    FreeTongRide.Application.Auth.AuthService.ValidatePassword(newPassword);
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var passwords = scope.ServiceProvider.GetRequiredService<IPasswordService>();
+    var admin = db.Users.Where(u => u.Role == FreeTongRide.Domain.Enums.UserRole.Admin).OrderBy(u => u.CreatedAt).First();
+    admin.PasswordHash = passwords.Hash(admin, newPassword);
+    admin.IsActive = true;
+    await db.SaveChangesAsync();
+    Console.WriteLine($"Admin password updated for {admin.Email ?? admin.Phone}.");
+    return;
+}
+
 app.UseForwardedHeaders();
 app.UseExceptionHandler();
 if (app.Environment.IsDevelopment()) app.MapOpenApi();

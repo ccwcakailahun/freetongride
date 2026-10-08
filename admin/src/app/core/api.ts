@@ -41,22 +41,42 @@ export class AuthService {
   readonly user = computed(() => this.session()?.user ?? null);
   readonly token = computed(() => this.session()?.token ?? null);
 
-  async login(phone: string, password: string) {
-    const r = await firstValueFrom(this.http.post<AuthResponse>(`${API_URL}/api/auth/admin/login`, { phone, password }));
+  /** remember=false keeps the session only until the browser tab closes. */
+  async login(phoneOrEmail: string, password: string, remember = true) {
+    const r = await firstValueFrom(this.http.post<AuthResponse>(`${API_URL}/api/auth/admin/login`, { phone: phoneOrEmail.trim(), password }));
     const s = { token: r.accessToken, user: r.user, expiresAt: r.expiresAt };
-    try { localStorage.setItem(this.key, JSON.stringify(s)); } catch { /* storage blocked: session lasts this tab only */ }
+    try {
+      localStorage.removeItem(this.key);
+      sessionStorage.removeItem(this.key);
+      (remember ? localStorage : sessionStorage).setItem(this.key, JSON.stringify(s));
+    } catch { /* storage blocked: session lasts this tab only */ }
     this.session.set(s);
   }
 
+  changePassword(currentPassword: string, newPassword: string) {
+    return firstValueFrom(this.http.post<void>(`${API_URL}/api/me/password`, { currentPassword, newPassword }));
+  }
+
+  async updateProfile(fullName: string, email: string) {
+    const u = await firstValueFrom(this.http.put<UserDto>(`${API_URL}/api/me`, { fullName, email }));
+    const s = this.session();
+    if (s) {
+      const next = { ...s, user: { ...s.user, fullName: u.fullName, email: u.email } };
+      this.session.set(next);
+      try { (localStorage.getItem(this.key) ? localStorage : sessionStorage).setItem(this.key, JSON.stringify(next)); } catch { /* ignore */ }
+    }
+    return u;
+  }
+
   logout() {
-    try { localStorage.removeItem(this.key); } catch { /* ignore */ }
+    try { localStorage.removeItem(this.key); sessionStorage.removeItem(this.key); } catch { /* ignore */ }
     this.session.set(null);
     this.router.navigateByUrl('/login');
   }
 
   private load() {
     try {
-      const raw = localStorage.getItem(this.key);
+      const raw = localStorage.getItem(this.key) ?? sessionStorage.getItem(this.key);
       if (!raw) return null;
       const s = JSON.parse(raw);
       return new Date(s.expiresAt) > new Date() ? s : null;
