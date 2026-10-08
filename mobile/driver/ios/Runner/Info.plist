@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Ftr Driver</string>
+	<string>FreeTongRide Driver</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -66,5 +66,28 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>FreeTongRide Driver uses your location to send you nearby ride requests and share your position with your passenger during trips.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>FreeTongRide Driver keeps sharing your location with your passenger while a trip is running, even if the app is in the background.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Take a profile photo or photograph your documents and vehicle.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose a profile photo or document images.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+		<string>https</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

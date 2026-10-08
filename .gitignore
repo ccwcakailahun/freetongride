@@ -33,3 +33,6 @@ mobile/**/lib/config/secrets.dart
 .DS_Store
 Thumbs.db
 *.log
+
+# Web build is only used for local design previews
+mobile/*/web/
