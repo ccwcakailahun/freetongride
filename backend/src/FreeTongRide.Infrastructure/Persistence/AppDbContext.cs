@@ -33,12 +33,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         b.Entity<User>(e =>
         {
             e.HasIndex(x => x.Phone).IsUnique();
-            e.HasIndex(x => x.Email).IsUnique().HasFilter("[Email] IS NOT NULL");
+            // PostgreSQL unique indexes already allow many NULLs.
+            e.HasIndex(x => x.Email).IsUnique();
             e.Property(x => x.PasswordHash).HasMaxLength(512);
             e.Property(x => x.PhotoUrl).HasMaxLength(1024);
             e.Property(x => x.DeviceToken).HasMaxLength(1024);
-            // Guards wallet balance against two settlements racing.
-            e.Property<byte[]>("RowVersion").IsRowVersion();
+            // Guards wallet balance against two settlements racing (maps to PostgreSQL xmin).
+            e.Property<uint>("Version").IsRowVersion();
             e.HasOne(x => x.DriverProfile).WithOne(x => x.User).HasForeignKey<DriverProfile>(x => x.UserId);
             e.HasMany(x => x.SavedPlaces).WithOne().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
         });
@@ -47,7 +48,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         b.Entity<DriverProfile>(e =>
         {
-            e.HasIndex(x => x.PlateNumber).IsUnique().HasFilter("[PlateNumber] IS NOT NULL");
+            e.HasIndex(x => x.PlateNumber).IsUnique();
             e.HasIndex(x => new { x.IsOnline, x.Status, x.ServiceId });
             e.HasOne(x => x.Service).WithMany().HasForeignKey(x => x.ServiceId).OnDelete(DeleteBehavior.Restrict);
             e.HasMany(x => x.Documents).WithOne().HasForeignKey(x => x.DriverProfileId).OnDelete(DeleteBehavior.Cascade);
@@ -63,8 +64,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.PickupAddress).HasMaxLength(512);
             e.Property(x => x.DropoffAddress).HasMaxLength(512);
             e.Property(x => x.Note).HasMaxLength(1000);
-            // Two passengers' devices / a double tap cannot accept two offers on the same ride.
-            e.Property<byte[]>("RowVersion").IsRowVersion();
+            // Two devices / a double tap cannot accept two offers on the same ride (maps to PostgreSQL xmin).
+            e.Property<uint>("Version").IsRowVersion();
             e.HasOne(x => x.Passenger).WithMany().HasForeignKey(x => x.PassengerId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.Driver).WithMany().HasForeignKey(x => x.DriverId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.Service).WithMany().HasForeignKey(x => x.ServiceId).OnDelete(DeleteBehavior.Restrict);

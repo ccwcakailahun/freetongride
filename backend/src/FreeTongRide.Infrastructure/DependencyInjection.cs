@@ -13,7 +13,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
     {
         var cs = config.GetConnectionString("Default") ?? throw new InvalidOperationException("ConnectionStrings:Default is not set.");
-        services.AddDbContext<AppDbContext>(o => o.UseSqlServer(cs, sql => sql.EnableRetryOnFailure()));
+        services.AddDbContext<AppDbContext>(o => o.UseNpgsql(cs, pg => pg.EnableRetryOnFailure()));
         services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
 
         var jwt = config.GetSection("Jwt").Get<JwtSettings>() ?? new JwtSettings();

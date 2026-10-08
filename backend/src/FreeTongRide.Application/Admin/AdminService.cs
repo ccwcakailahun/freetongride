@@ -76,14 +76,15 @@ public class AdminService(IAppDbContext db, IRealtime realtime)
     {
         var q = RideQuery();
         if (status != null) q = q.Where(r => r.Status == status);
-        if (from != null) q = q.Where(r => r.CreatedAt >= from);
-        if (to != null) q = q.Where(r => r.CreatedAt < to.Value.AddDays(1));
+        // Dates from the query string have no kind; the database stores UTC.
+        if (from != null) { var f = DateTime.SpecifyKind(from.Value.Date, DateTimeKind.Utc); q = q.Where(r => r.CreatedAt >= f); }
+        if (to != null) { var t = DateTime.SpecifyKind(to.Value.Date.AddDays(1), DateTimeKind.Utc); q = q.Where(r => r.CreatedAt < t); }
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var s = search.Trim();
-            q = q.Where(r => r.Code.Contains(s) || r.Passenger.FullName.Contains(s) || r.Passenger.Phone.Contains(s) ||
-                             (r.Driver != null && (r.Driver.FullName.Contains(s) || r.Driver.Phone.Contains(s))) ||
-                             r.PickupAddress.Contains(s) || r.DropoffAddress.Contains(s));
+            var s = search.Trim().ToLower();
+            q = q.Where(r => r.Code.ToLower().Contains(s) || r.Passenger.FullName.ToLower().Contains(s) || r.Passenger.Phone.ToLower().Contains(s) ||
+                             (r.Driver != null && (r.Driver.FullName.ToLower().Contains(s) || r.Driver.Phone.ToLower().Contains(s))) ||
+                             r.PickupAddress.ToLower().Contains(s) || r.DropoffAddress.ToLower().Contains(s));
         }
         var total = await q.CountAsync(ct);
         var items = await q.OrderByDescending(r => r.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
@@ -137,8 +138,8 @@ public class AdminService(IAppDbContext db, IRealtime realtime)
         if (online != null) q = q.Where(d => d.IsOnline == online);
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var s = search.Trim();
-            q = q.Where(d => d.User.FullName.Contains(s) || d.User.Phone.Contains(s) || (d.PlateNumber != null && d.PlateNumber.Contains(s)));
+            var s = search.Trim().ToLower();
+            q = q.Where(d => d.User.FullName.ToLower().Contains(s) || d.User.Phone.ToLower().Contains(s) || (d.PlateNumber != null && d.PlateNumber.ToLower().Contains(s)));
         }
         var total = await q.CountAsync(ct);
         var items = await q.OrderByDescending(d => d.Status == DriverStatus.UnderReview).ThenByDescending(d => d.CreatedAt)
@@ -183,8 +184,8 @@ public class AdminService(IAppDbContext db, IRealtime realtime)
         var q = db.Users.Where(u => u.Role == UserRole.Passenger);
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var s = search.Trim();
-            q = q.Where(u => u.FullName.Contains(s) || u.Phone.Contains(s) || (u.Email != null && u.Email.Contains(s)));
+            var s = search.Trim().ToLower();
+            q = q.Where(u => u.FullName.ToLower().Contains(s) || u.Phone.ToLower().Contains(s) || (u.Email != null && u.Email.ToLower().Contains(s)));
         }
         var total = await q.CountAsync(ct);
         var items = await q.OrderByDescending(u => u.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize)
@@ -257,7 +258,8 @@ public class AdminService(IAppDbContext db, IRealtime realtime)
     {
         var q = db.WalletTransactions.Include(t => t.User).AsQueryable();
         if (type != null) q = q.Where(t => t.Type == type);
-        if (!string.IsNullOrWhiteSpace(search)) q = q.Where(t => t.User.FullName.Contains(search) || t.User.Phone.Contains(search) || t.Description.Contains(search));
+        var q2 = (search ?? "").Trim().ToLower();
+        if (q2.Length > 0) q = q.Where(t => t.User.FullName.ToLower().Contains(q2) || t.User.Phone.ToLower().Contains(q2) || t.Description.ToLower().Contains(q2));
         var total = await q.CountAsync(ct);
         var items = await q.OrderByDescending(t => t.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize)
             .Select(t => new AdminTxRow(t.Id, t.User.FullName, t.User.Role, t.Type, t.Amount, t.BalanceAfter, t.Description, t.Reference, t.CreatedAt))

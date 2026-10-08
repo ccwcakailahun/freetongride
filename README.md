@@ -8,7 +8,7 @@
 | Driver app | `mobile/driver` | Flutter (Android + iOS) |
 | Shared mobile code (design system, API client, models) | `mobile/packages/ftr_core` | Dart package |
 | Admin panel (monitoring & operations) | `admin` | Angular |
-| API | `backend` | .NET 10 Web API, EF Core, SQL Server, SignalR |
+| API | `backend` | .NET 10 Web API, EF Core, PostgreSQL, SignalR |
 
 The customer journey this is built from is in [`docs/customer-journey.html`](docs/customer-journey.html).
 
@@ -31,7 +31,7 @@ Live updates go over SignalR at `/hubs/ride` (pass the JWT as `access_token`). E
 
 ### API
 
-Needs the .NET 10 SDK and SQL Server LocalDB (installed with Visual Studio).
+Needs the .NET 10 SDK and PostgreSQL 16+ running locally. Create a database and user matching the `Default` connection string in `appsettings.Development.json`.
 
 ```bash
 cd backend
