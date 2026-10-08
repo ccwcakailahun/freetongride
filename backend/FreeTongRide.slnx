@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FreeTongRide.Api/FreeTongRide.Api.csproj" />
+    <Project Path="src/FreeTongRide.Application/FreeTongRide.Application.csproj" />
+    <Project Path="src/FreeTongRide.Domain/FreeTongRide.Domain.csproj" />
+    <Project Path="src/FreeTongRide.Infrastructure/FreeTongRide.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FreeTongRide.Tests/FreeTongRide.Tests.csproj" />
+  </Folder>
+</Solution>

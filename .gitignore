@@ -1,0 +1,35 @@
+# .NET
+backend/**/bin/
+backend/**/obj/
+backend/**/wwwroot/uploads/
+*.user
+.vs/
+
+# Node / Angular
+admin/node_modules/
+admin/dist/
+admin/.angular/
+
+# Flutter / Dart
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/android/.gradle/
+**/android/local.properties
+**/android/key.properties
+**/*.jks
+**/*.keystore
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+mobile/**/lib/config/secrets.dart
+
+# Editors / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+*.log

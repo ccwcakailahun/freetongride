@@ -1,0 +1,510 @@
+<title>FreeTongRide Customer Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one trip as a three-lane swimlane up top, then one detailed lane per actor, then screens + open decisions. Brand taken from the FreeTongRide mockups. */
+:root {
+  --bg: #F4F7FE;
+  --surface: #FFFFFF;
+  --surface-2: #EEF3FF;
+  --ink: #0B1640;
+  --muted: #5A6688;
+  --line: #DFE6F5;
+  --rider: #1A5CFF;
+  --rider-soft: #E6EEFF;
+  --driver: #10A866;
+  --driver-soft: #E2F7EC;
+  --admin: #7445F0;
+  --admin-soft: #EFE9FF;
+  --warn: #C9790A;
+  --warn-soft: #FFF3DE;
+  --danger: #D93848;
+  --danger-soft: #FDE7EA;
+  --display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --body: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --radius: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #070D22; --surface: #0F1833; --surface-2: #15214A; --ink: #EAF0FF; --muted: #9AA6C8; --line: #24305A;
+    --rider: #5B8CFF; --rider-soft: #16245A; --driver: #35D08A; --driver-soft: #0F3326; --admin: #A486FF; --admin-soft: #261D4F;
+    --warn: #F2B04A; --warn-soft: #3A2A10; --danger: #FF7280; --danger-soft: #3D1820; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #070D22; --surface: #0F1833; --surface-2: #15214A; --ink: #EAF0FF; --muted: #9AA6C8; --line: #24305A;
+  --rider: #5B8CFF; --rider-soft: #16245A; --driver: #35D08A; --driver-soft: #0F3326; --admin: #A486FF; --admin-soft: #261D4F;
+  --warn: #F2B04A; --warn-soft: #3A2A10; --danger: #FF7280; --danger-soft: #3D1820; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 64px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.02em; }
+h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 800; line-height: 1.08; }
+h1 em { font-style: normal; color: var(--rider); }
+h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 800; }
+h3 { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+p { margin: 0; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lede { color: var(--muted); max-width: 66ch; font-size: 16px; }
+.mono { font-family: var(--mono); font-size: 12px; }
+
+/* header */
+.top { display: grid; gap: 18px; padding-block: 8px 28px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand svg { width: 42px; height: 42px; flex: none; }
+.brand b { font-family: var(--display); font-size: 20px; font-weight: 800; }
+.brand b span { color: var(--rider); }
+.brand small { display: block; font-size: 11px; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; }
+.actors { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; font-weight: 600; font-size: 13px; }
+.chip i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.c-rider { background: var(--rider-soft); color: var(--rider); } .c-rider i { background: var(--rider); }
+.c-driver { background: var(--driver-soft); color: var(--driver); } .c-driver i { background: var(--driver); }
+.c-admin { background: var(--admin-soft); color: var(--admin); } .c-admin i { background: var(--admin); }
+
+nav.jump { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); margin-inline: -20px; padding: 10px 20px; display: flex; gap: 6px; overflow-x: auto; }
+nav.jump a { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 13px; padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+nav.jump a:hover, nav.jump a:focus-visible { background: var(--surface); color: var(--ink); outline: none; }
+
+section { padding-top: 48px; display: grid; gap: 20px; }
+.sec-head { display: grid; gap: 8px; }
+
+/* swimlane */
+.lane-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.lane { display: grid; grid-template-columns: 130px repeat(6, minmax(150px, 1fr)); min-width: 1040px; }
+.lane > div { padding: 14px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); font-size: 13px; }
+.lane > div:nth-child(7n) { border-right: 0; }
+.lane .ph { background: var(--surface-2); font-weight: 700; font-size: 13px; }
+.lane .ph .mono { display: block; color: var(--muted); font-weight: 500; margin-top: 2px; }
+.lane .who { font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.lane .who i { width: 10px; height: 10px; border-radius: 50%; }
+.lane .r { background: color-mix(in srgb, var(--rider-soft) 45%, var(--surface)); }
+.lane .d { background: color-mix(in srgb, var(--driver-soft) 45%, var(--surface)); }
+.lane .a { background: color-mix(in srgb, var(--admin-soft) 45%, var(--surface)); }
+.lane .last > div { border-bottom: 0; }
+.lane .rt { color: var(--muted); font-size: 12px; }
+.status-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.st { font-family: var(--mono); font-size: 12px; padding: 4px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); color: var(--ink); }
+.arrow { color: var(--muted); }
+
+/* stage lists */
+.journey { display: grid; gap: 14px; }
+.stage { display: grid; grid-template-columns: 210px 1fr; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.stage-name { padding: 18px; display: grid; align-content: start; gap: 6px; }
+.rider .stage-name { background: var(--rider-soft); }
+.driver .stage-name { background: var(--driver-soft); }
+.admin .stage-name { background: var(--admin-soft); }
+.stage-name .k { font-family: var(--mono); font-size: 12px; font-weight: 500; }
+.rider .k { color: var(--rider); } .driver .k { color: var(--driver); } .admin .k { color: var(--admin); }
+.stage-name p { font-size: 13px; color: var(--muted); }
+.steps { padding: 6px 18px; display: grid; }
+.step { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+.step:last-child { border-bottom: 0; }
+.step b { font-weight: 700; }
+.step .what { min-width: 0; }
+.step .what p { color: var(--muted); font-size: 14px; margin-top: 2px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; align-content: start; justify-content: flex-end; }
+.tag { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 7px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.tag.canvas { background: var(--rider-soft); color: var(--rider); }
+.tag.new { background: var(--warn-soft); color: var(--warn); }
+.tag.api { font-family: var(--mono); font-weight: 500; }
+.tag.sos { background: var(--danger-soft); color: var(--danger); }
+.tag.dcanvas { background: var(--driver-soft); color: var(--driver); }
+.tag.acanvas { background: var(--admin-soft); color: var(--admin); }
+
+/* emotion curve */
+.curve { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 18px 10px; }
+.curve-scroll { overflow-x: auto; }
+.curve svg { min-width: 760px; width: 100%; height: auto; display: block; }
+.curve text { font-family: var(--body); fill: var(--muted); font-size: 12px; }
+.curve .lbl { fill: var(--ink); font-weight: 600; }
+
+/* moments */
+.moments { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.moment { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 8px; align-content: start; }
+.moment h3 { font-size: 16px; }
+.moment p { color: var(--muted); font-size: 14px; }
+
+/* screens table */
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14px; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--surface-2); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td.n { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.ok { color: var(--driver); font-weight: 700; }
+.todo { color: var(--warn); font-weight: 700; }
+
+/* decisions */
+.decisions { display: grid; gap: 12px; }
+.dec { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 12px; padding: 16px 18px; display: grid; gap: 6px; }
+.dec p { color: var(--muted); font-size: 14px; }
+.dec .rec { color: var(--ink); font-weight: 600; }
+
+footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+
+@media (max-width: 760px) {
+  .stage { grid-template-columns: 1fr; }
+  .step { grid-template-columns: 1fr; gap: 8px; }
+  .meta { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#18D46B"/><stop offset="1" stop-color="#0E9F7A"/></linearGradient>
+          <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2D8BFF"/><stop offset="1" stop-color="#1747F0"/></linearGradient>
+        </defs>
+        <path d="M10 22c0-9 7-16 16-16h16c0 6-4 9-9 9H27c-5 0-8 3-8 8v3h-9z" fill="url(#g1)"/>
+        <path d="M22 18h16c0 9-5 15-11 22l-5 6c-2-6-3-12-3-17 0-6 1-9 3-11z" fill="url(#g2)"/>
+        <path d="M21 24c-3 4-5 9-5 15" stroke="#0B1640" stroke-width="2.4" stroke-dasharray="3 2.4" fill="none"/>
+      </svg>
+      <div><b>FreeTong<span>Ride</span></b><small>Moving Freetown Together</small></div>
+    </div>
+    <p class="eyebrow">Customer journey · v1 · before the Flutter build</p>
+    <h1>One trip, seen by the <em>passenger</em>, the driver and the admin.</h1>
+    <p class="lede">This map follows a single ride from Lumley Beach to Freetown Central through all three sides of FreeTongRide. Each step names the screen it happens on (from your mockups, or a new screen to design in the same style), and the backend call it uses in the existing app. The new Flutter interfaces will be built against this map.</p>
+    <div class="actors">
+      <span class="chip c-rider"><i></i>Passenger app</span>
+      <span class="chip c-driver"><i></i>Driver app</span>
+      <span class="chip c-admin"><i></i>Admin web panel</span>
+    </div>
+  </header>
+
+  <nav class="jump" aria-label="Sections">
+    <a href="#trip">One trip</a>
+    <a href="#passenger">Passenger</a>
+    <a href="#driver">Driver</a>
+    <a href="#admin">Admin</a>
+    <a href="#moments">Critical moments</a>
+    <a href="#screens">Screen list</a>
+    <a href="#decisions">Your decisions</a>
+  </nav>
+
+  <!-- ONE TRIP SWIMLANE -->
+  <section id="trip">
+    <div class="sec-head">
+      <p class="eyebrow">The handoff</p>
+      <h2>One trip across three lanes</h2>
+      <p class="lede">Read down a column to see what each person is doing at the same moment. Updates between the apps travel over Pusher in real time; the admin panel watches the same ride record.</p>
+    </div>
+    <div class="status-row" aria-label="Ride status sequence">
+      Ride status in the database:
+      <span class="st">0 pending</span><span class="arrow">→</span>
+      <span class="st">2 active (driver accepted)</span><span class="arrow">→</span>
+      <span class="st">3 running</span><span class="arrow">→</span>
+      <span class="st">4 ended, awaiting payment</span><span class="arrow">→</span>
+      <span class="st">1 completed</span>
+      <span class="arrow">·</span><span class="st">9 cancelled</span>
+    </div>
+    <div class="lane-scroll">
+      <div class="lane">
+        <div class="ph">Lane</div>
+        <div class="ph">1 · Request<span class="mono">status 0</span></div>
+        <div class="ph">2 · Match<span class="mono">bids → status 2</span></div>
+        <div class="ph">3 · Pickup<span class="mono">status 2</span></div>
+        <div class="ph">4 · On trip<span class="mono">status 3</span></div>
+        <div class="ph">5 · Pay<span class="mono">status 4 → 1</span></div>
+        <div class="ph">6 · Rate &amp; after<span class="mono">status 1</span></div>
+
+        <div class="who r"><i style="background:var(--rider)"></i>Passenger</div>
+        <div class="r">Types "Where to?", picks Freetown Central, sees fare estimate for Okada, Keke or Car, confirms.</div>
+        <div class="r">Watches driver offers arrive with price, rating and ETA. Accepts one.</div>
+        <div class="r">Sees driver card and car moving on the map. Gets a 6-digit pickup code. Can call or chat.</div>
+        <div class="r">Live route, turn-by-turn, ETA. Share trip, Safety (SOS), Add stop.</div>
+        <div class="r">Trip complete screen: fare breakdown, pays by Wallet, Orange Money, card or cash.</div>
+        <div class="r">Rates driver, adds tip, downloads receipt. Trip appears in Activity.</div>
+
+        <div class="who d"><i style="background:var(--driver)"></i>Driver</div>
+        <div class="d">Online in the zone. A new request pops up with pickup, drop-off, distance and offered fare.</div>
+        <div class="d">Sends an offer (accepts the price or bids higher). Waits for the passenger.</div>
+        <div class="d">Navigates to pickup, taps arrived, asks the passenger for the code.</div>
+        <div class="d">Enters the code to start. App streams live location every few seconds.</div>
+        <div class="d">Ends trip. Confirms cash received, or sees gateway payment land in wallet.</div>
+        <div class="d">Rates the passenger. Earnings minus commission show in wallet.</div>
+
+        <div class="who a"><i style="background:var(--admin)"></i>Admin</div>
+        <div class="a">New ride appears in Live Rides and the dashboard counter.</div>
+        <div class="a">Can see every bid on the ride and which driver won.</div>
+        <div class="a">Ride shows as Active with driver, vehicle and rider details.</div>
+        <div class="a">Ride shows as Running. An SOS from either side raises an alert at the top of the panel.</div>
+        <div class="a">Payment recorded. Orange Money transactions reconcile automatically; admin can re-check.</div>
+        <div class="a">Commission booked. Reviews visible. Disputes go to support tickets.</div>
+
+        <div class="who rt">Real-time event</div>
+        <div class="rt">new-ride → drivers in zone</div>
+        <div class="rt">new-bid → passenger · bid-accept → driver</div>
+        <div class="rt">live-location → passenger</div>
+        <div class="rt">pick-up / ride-start → passenger</div>
+        <div class="rt">ride-end · payment-complete</div>
+        <div class="rt">review stored → both</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSENGER -->
+  <section id="passenger" class="rider">
+    <div class="sec-head">
+      <p class="eyebrow" style="color:var(--rider)">Passenger app</p>
+      <h2>Mariama's journey</h2>
+      <p class="lede">Mariama lives near Lumley Beach and works in Freetown Central. She uses Orange Money more than cards, her data connection is not always strong, and safety matters to her more than speed.</p>
+    </div>
+
+    <div class="curve" aria-label="How the passenger feels at each stage">
+      <p class="eyebrow" style="margin-bottom:6px">How she feels along the way</p>
+      <div class="curve-scroll">
+        <svg viewBox="0 0 900 200" role="img" aria-label="Emotion curve: curious at download, a dip during sign-up, rising at first ride request, dip while waiting for offers, high on trip, highest after a smooth payment">
+          <line x1="40" y1="100" x2="880" y2="100" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 4"/>
+          <text x="0" y="40">Happy</text>
+          <text x="0" y="168">Anxious</text>
+          <path d="M60 80 C110 80 130 130 180 135 S270 95 300 90 S380 70 420 75 S500 135 540 130 S620 60 660 55 S760 40 800 35 S850 45 870 45" fill="none" stroke="var(--rider)" stroke-width="3" stroke-linecap="round"/>
+          <g fill="var(--surface)" stroke="var(--rider)" stroke-width="3">
+            <circle cx="60" cy="80" r="6"/><circle cx="180" cy="135" r="6"/><circle cx="300" cy="90" r="6"/><circle cx="420" cy="75" r="6"/><circle cx="540" cy="130" r="6"/><circle cx="660" cy="55" r="6"/><circle cx="800" cy="35" r="6"/>
+          </g>
+          <text class="lbl" x="60" y="190" text-anchor="middle">Discover</text>
+          <text class="lbl" x="180" y="190" text-anchor="middle">Sign up</text>
+          <text class="lbl" x="300" y="190" text-anchor="middle">Set up</text>
+          <text class="lbl" x="420" y="190" text-anchor="middle">Request</text>
+          <text class="lbl" x="540" y="190" text-anchor="middle">Wait for driver</text>
+          <text class="lbl" x="660" y="190" text-anchor="middle">On trip</text>
+          <text class="lbl" x="800" y="190" text-anchor="middle">Pay &amp; rate</text>
+          <text x="180" y="160" text-anchor="middle">OTP delays</text>
+          <text x="540" y="155" text-anchor="middle">"Is anyone coming?"</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="journey">
+      <div class="stage">
+        <div class="stage-name"><span class="k">P1</span><h3>Discover &amp; open</h3><p>First impression. The app must feel local and safe.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Splash screen</b><p>Logo and wave on white. Loads settings and language in parallel so it never hangs on slow data.</p></div><div class="meta"><span class="tag canvas">Splash (logo art)</span><span class="tag api">GET general-setting</span></div></div>
+          <div class="step"><div class="what"><b>Sign in or create account</b><p>Phone + password with +232 preselected, or Continue with Google. Remember me on by default.</p></div><div class="meta"><span class="tag canvas">Canvas 12 Sign In</span><span class="tag api">POST login</span></div></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-name"><span class="k">P2</span><h3>Sign up</h3><p>Biggest drop-off risk. Keep it under 2 minutes.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Create your account</b><p>Full name, phone, email, password, agree to terms. Three trust badges at the bottom.</p></div><div class="meta"><span class="tag canvas">Canvas 13</span><span class="tag api">POST register</span></div></div>
+          <div class="step"><div class="what"><b>Verify your phone</b><p>Country Sierra Leone, number, Send Code. "Use email instead" as a fallback when SMS fails.</p></div><div class="meta"><span class="tag canvas">Canvas 14</span></div></div>
+          <div class="step"><div class="what"><b>Enter the 6-digit code</b><p>Auto-advance boxes, 60-second resend timer, Edit phone number.</p></div><div class="meta"><span class="tag canvas">Canvas 15</span><span class="tag api">POST verify-mobile</span></div></div>
+          <div class="step"><div class="what"><b>Secure your account</b><p>Live checklist: 8+ characters, a number, an uppercase letter. Used when a Google sign-up has no password, and for reset.</p></div><div class="meta"><span class="tag canvas">Canvas 16</span></div></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-name"><span class="k">P3</span><h3>Set up</h3><p>Permissions with a clear reason, then a short profile.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Enable location</b><p>Explains faster pickups, accurate ETAs and safer tracking before the system prompt appears. "Not now" lets her type the pickup instead.</p></div><div class="meta"><span class="tag canvas">Canvas 17</span></div></div>
+          <div class="step"><div class="what"><b>Allow notifications</b><p>Driver arriving, trip status, scheduled reminders, promos.</p></div><div class="meta"><span class="tag canvas">Canvas 18</span><span class="tag api">POST add-device-token</span></div></div>
+          <div class="step"><div class="what"><b>Complete your profile</b><p>Photo, name, email, emergency contact, home area, saved places Home and Work.</p></div><div class="meta"><span class="tag canvas">Canvas 19</span><span class="tag api">POST profile-setting</span></div></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-name"><span class="k">P4</span><h3>Request a ride</h3><p>Home to "confirmed" in three taps.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Home</b><p>Greeting, weather, Where to?, Ride / Schedule / For Others / Package, map, saved places, popular destinations.</p></div><div class="meta"><span class="tag canvas">Canvas 1 Home</span></div></div>
+          <div class="step"><div class="what"><b>Choose destination</b><p>Search with recent and saved places; pin on map.</p></div><div class="meta"><span class="tag new">New screen</span></div></div>
+          <div class="step"><div class="what"><b>Choose ride type and confirm</b><p>Okada, Keke, Car with fare estimate and distance. Payment method and coupon on the same sheet.</p></div><div class="meta"><span class="tag new">New screen</span><span class="tag api">POST ride/fare-and-distance</span><span class="tag api">POST ride/create</span></div></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-name"><span class="k">P5</span><h3>Match &amp; pickup</h3><p>The anxious wait. Show motion, not a spinner.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Finding drivers / driver offers</b><p>Radar animation on the map. Offers slide in as cards: photo, rating, car, price, minutes away. Accept or decline each.</p></div><div class="meta"><span class="tag new">New screen</span><span class="tag api">GET ride/bids</span><span class="tag api">POST ride/accept</span></div></div>
+          <div class="step"><div class="what"><b>Driver on the way</b><p>Driver card like Canvas 6, car moving live, large pickup code, call and chat buttons, cancel with reason.</p></div><div class="meta"><span class="tag new">New screen</span><span class="tag api">ride/messages</span><span class="tag api">POST ride/cancel</span></div></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-name"><span class="k">P6</span><h3>On the trip</h3><p>Feel safe and informed the whole way.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Trip in progress</b><p>Route line, next turn, progress Pickup → On the way → Drop-off, Share trip, Safety, Add stop, fare and payment strip.</p></div><div class="meta"><span class="tag canvas">Canvas 6</span></div></div>
+          <div class="step"><div class="what"><b>Safety / SOS</b><p>One tap sends location and message to the admin alert queue and her emergency contact.</p></div><div class="meta"><span class="tag sos">SOS</span><span class="tag api">POST ride/sos</span></div></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-name"><span class="k">P7</span><h3>Pay, rate, return</h3><p>End on a high so she books again.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Trip completed</b><p>Route summary, Le 90,000 total, fare breakdown, payment status, 5-star rating, tip chips, receipt, Book again.</p></div><div class="meta"><span class="tag canvas">Canvas 7</span><span class="tag api">POST ride/payment</span><span class="tag api">POST review</span></div></div>
+          <div class="step"><div class="what"><b>Activity</b><p>All / Upcoming / Completed filters, receipts, Book again on every card.</p></div><div class="meta"><span class="tag canvas">Canvas 8</span><span class="tag api">GET ride/list</span></div></div>
+          <div class="step"><div class="what"><b>Wallet</b><p>Balance, Add funds by Orange Money, payment methods, rewards and points, transaction history.</p></div><div class="meta"><span class="tag canvas">Canvas 9</span><span class="tag api">deposit/insert</span></div></div>
+          <div class="step"><div class="what"><b>Account</b><p>Personal info, saved places, safety, payment methods, help, notifications, settings, refer a friend, sign out.</p></div><div class="meta"><span class="tag canvas">Canvas 10</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRIVER -->
+  <section id="driver" class="driver">
+    <div class="sec-head">
+      <p class="eyebrow" style="color:var(--driver)">Driver app</p>
+      <h2>Mohamed's journey</h2>
+      <p class="lede">Mohamed drives a white Toyota Corolla, AFS 284. He wants steady requests near him, to know exactly what he earns after commission, and to cash out to Orange Money fast. The driver app uses the same visual style as the passenger mockups, with green as its lead colour so the two apps are easy to tell apart.</p>
+    </div>
+    <div class="journey">
+      <div class="stage">
+        <div class="stage-name"><span class="k">D1</span><h3>Join</h3><p>Same sign-up pattern as the passenger app.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Sign in / create driver account</b><p>Phone, OTP, password, profile. Reuses the designs of Canvas 12–16 in driver green.</p></div><div class="meta"><span class="tag dcanvas">Reuse 12–16</span><span class="tag api">driver/register</span></div></div>
+          <div class="step"><div class="what"><b>Choose service and zone</b><p>Okada, Keke or Car; operating zone Freetown &amp; Western Area.</p></div><div class="meta"><span class="tag new">New screen</span></div></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stage-name"><span class="k">D2</span><h3>Get verified</h3><p>Nobody drives until the admin approves.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Upload documents</b><p>Driving licence, national ID, photo. Step progress bar with status for each document.</p></div><div class="meta"><span class="tag new">New screen</span><span class="tag api">driver-verification</span></div></div>
+          <div class="step"><div class="what"><b>Add vehicle</b><p>Brand, model, colour, year, plate number, vehicle photos.</p></div><div class="meta"><span class="tag new">New screen</span><span class="tag api">vehicle-verification</span></div></div>
+          <div class="step"><div class="what"><b>Under review</b><p>Friendly waiting screen with what happens next. Push notification on approval or rejection with the reason.</p></div><div class="meta"><span class="tag new">New screen</span></div></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stage-name"><span class="k">D3</span><h3>Go online</h3><p>The driver's home screen.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Driver home</b><p>Big Online / Offline switch, today's earnings, trips, rating, map of the zone, wallet balance.</p></div><div class="meta"><span class="tag new">New screen</span></div></div>
+          <div class="step"><div class="what"><b>New ride request</b><p>Full-screen card with sound: pickup, drop-off, distance, passenger rating and offered fare. Accept the price or send a higher offer before the timer ends.</p></div><div class="meta"><span class="tag new">New screen</span><span class="tag api">POST bid/create</span></div></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stage-name"><span class="k">D4</span><h3>Pick up</h3><p>Get to the right person at the right place.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Navigate to pickup</b><p>Map with route, passenger name and photo, call and chat, open in Google Maps.</p></div><div class="meta"><span class="tag new">New screen</span><span class="tag api">POST rides/live-location</span></div></div>
+          <div class="step"><div class="what"><b>Start trip with code</b><p>Six boxes styled like Canvas 15. The code proves he picked up the right passenger.</p></div><div class="meta"><span class="tag dcanvas">Reuse Canvas 15</span><span class="tag api">POST rides/start</span></div></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stage-name"><span class="k">D5</span><h3>Drive &amp; finish</h3><p>Minimal taps while driving.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Trip in progress</b><p>Driver version of Canvas 6: navigation first, one large End Trip button, SOS.</p></div><div class="meta"><span class="tag dcanvas">Adapt Canvas 6</span><span class="tag sos">SOS</span></div></div>
+          <div class="step"><div class="what"><b>Collect payment</b><p>Shows the amount. For cash: Confirm cash received. For wallet or Orange Money: waits for the paid tick.</p></div><div class="meta"><span class="tag new">New screen</span><span class="tag api">POST rides/end</span><span class="tag api">received-cash-payment</span></div></div>
+          <div class="step"><div class="what"><b>Rate the passenger</b><p>Stars and short comment, then back online.</p></div><div class="meta"><span class="tag api">POST review</span></div></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stage-name"><span class="k">D6</span><h3>Earn &amp; cash out</h3><p>Trust grows when earnings are clear.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Earnings wallet</b><p>Driver version of Canvas 9: balance, today/week, commission paid, transactions.</p></div><div class="meta"><span class="tag dcanvas">Adapt Canvas 9</span></div></div>
+          <div class="step"><div class="what"><b>Withdraw</b><p>Choose Orange Money, enter amount, confirm. Status pending → approved.</p></div><div class="meta"><span class="tag new">New screen</span><span class="tag api">withdraw-request</span></div></div>
+          <div class="step"><div class="what"><b>Trip history and account</b><p>Like Canvas 8 and 10, plus Vehicle and Documents entries.</p></div><div class="meta"><span class="tag dcanvas">Adapt 8 &amp; 10</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin" class="admin">
+    <div class="sec-head">
+      <p class="eyebrow" style="color:var(--admin)">Admin web panel</p>
+      <h2>The operations team's journey</h2>
+      <p class="lede">The admin keeps the system safe and moving. Their day is a loop: check the dashboard, clear queues (drivers, payouts, tickets), respond to alerts, then tune zones and fares from the numbers.</p>
+    </div>
+    <div class="journey">
+      <div class="stage">
+        <div class="stage-name"><span class="k">A1</span><h3>Watch</h3><p>Know the state of the city in 10 seconds.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Dashboard</b><p>Rides today by status, active drivers online, revenue and commission, new riders and drivers, pending approvals, open SOS count.</p></div><div class="meta"><span class="tag acanvas">Restyle</span></div></div>
+          <div class="step"><div class="what"><b>Live rides</b><p>Lists for pending, running, completed and cancelled rides, each with bids, driver, route, payment and messages.</p></div><div class="meta"><span class="tag acanvas">ManageRide</span></div></div>
+          <div class="step"><div class="what"><b>Live map</b><p>Online drivers and running trips as pins over Freetown, refreshed from live-location.</p></div><div class="meta"><span class="tag new">New page</span></div></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stage-name"><span class="k">A2</span><h3>Respond</h3><p>Safety first, always top of the screen.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>SOS alerts</b><p>Red banner on every page while an alert is open: who, ride, location, message. Call buttons and Mark resolved.</p></div><div class="meta"><span class="tag sos">SosAlert</span></div></div>
+          <div class="step"><div class="what"><b>Support tickets</b><p>Rider and driver complaints, lost items, fare disputes; reply and close.</p></div><div class="meta"><span class="tag acanvas">SupportTicket</span></div></div>
+          <div class="step"><div class="what"><b>Reviews</b><p>Low-rated drivers and riders flagged for follow-up; ban or warn.</p></div><div class="meta"><span class="tag acanvas">ManageReview</span></div></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stage-name"><span class="k">A3</span><h3>Approve</h3><p>Queues that block real people from earning.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Driver verification</b><p>View documents, approve or reject with a reason that reaches the driver app.</p></div><div class="meta"><span class="tag acanvas">ManageDrivers · Kyc</span></div></div>
+          <div class="step"><div class="what"><b>Vehicle verification</b><p>Check plate, photos, model and year.</p></div><div class="meta"><span class="tag acanvas">ManageDrivers</span></div></div>
+          <div class="step"><div class="what"><b>Deposits and withdrawals</b><p>Wallet top-ups and driver payouts. Orange Money payments reconcile by cron; admin can re-check or force a stuck one.</p></div><div class="meta"><span class="tag acanvas">Deposit · Withdrawal · OrangeMoney</span></div></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stage-name"><span class="k">A4</span><h3>Tune</h3><p>Set the rules the apps follow.</p></div>
+        <div class="steps">
+          <div class="step"><div class="what"><b>Zones, services and fares</b><p>Zone polygons, Okada / Keke / Car prices per km, commission percent.</p></div><div class="meta"><span class="tag acanvas">Zone · Service</span></div></div>
+          <div class="step"><div class="what"><b>Promotions and notifications</b><p>Coupons, referral rewards, push and SMS messages to riders or drivers.</p></div><div class="meta"><span class="tag acanvas">Coupon · Notification</span></div></div>
+          <div class="step"><div class="what"><b>Reports</b><p>Transactions, rides, logins, notification history; export for accounting.</p></div><div class="meta"><span class="tag acanvas">Report</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOMENTS -->
+  <section id="moments">
+    <div class="sec-head">
+      <p class="eyebrow">Where it can go wrong</p>
+      <h2>Critical moments to design for</h2>
+    </div>
+    <div class="moments">
+      <div class="moment"><span class="chip c-rider" style="justify-self:start"><i></i>Passenger</span><h3>No driver accepts</h3><p>After 90 seconds without an offer, suggest raising the fare or switching to Keke or Okada, instead of a silent spinner.</p></div>
+      <div class="moment"><span class="chip c-rider" style="justify-self:start"><i></i>Passenger</span><h3>SMS code never arrives</h3><p>Resend after 60 seconds, then offer email. Show the number clearly so typos are caught.</p></div>
+      <div class="moment"><span class="chip c-driver" style="justify-self:start"><i></i>Driver</span><h3>Signal drops mid-trip</h3><p>Keep tracking in the foreground service, queue location points and send them when the connection returns.</p></div>
+      <div class="moment"><span class="chip c-driver" style="justify-self:start"><i></i>Driver</span><h3>Passenger pays cash, app says unpaid</h3><p>Cash confirmation by the driver closes the ride; the admin sees who confirmed and when.</p></div>
+      <div class="moment"><span class="chip c-admin" style="justify-self:start"><i></i>Admin</span><h3>SOS during a trip</h3><p>Alert is impossible to miss: banner, sound, and the ride's last known location on the map.</p></div>
+      <div class="moment"><span class="chip c-admin" style="justify-self:start"><i></i>Admin</span><h3>Orange Money payment stuck</h3><p>Pending payments are re-checked by cron; the admin can re-check or force from the deposit page.</p></div>
+    </div>
+  </section>
+
+  <!-- SCREENS -->
+  <section id="screens">
+    <div class="sec-head">
+      <p class="eyebrow">Build list</p>
+      <h2>Screens and where their design comes from</h2>
+      <p class="lede">Your images cover 15 passenger screens (canvases 1, 6–10 and 12–19 plus the splash art). Canvases 2–5, 11 and 20 were not in the set; the journey needs the passenger screens marked "to design", which I'll create in the same style unless you send those canvases.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Screen</th><th>App</th><th>Design source</th></tr></thead>
+        <tbody>
+          <tr><td class="n">—</td><td>Splash</td><td>Passenger · Driver</td><td class="ok">Logo art provided</td></tr>
+          <tr><td class="n">1</td><td>Home</td><td>Passenger</td><td class="ok">Canvas 1</td></tr>
+          <tr><td class="n">2–5</td><td>Choose destination, Choose ride, Driver offers, Driver on the way</td><td>Passenger</td><td class="todo">Not in set: send canvases 2–5 or I design them</td></tr>
+          <tr><td class="n">6</td><td>Trip in progress</td><td>Passenger · adapted for Driver</td><td class="ok">Canvas 6</td></tr>
+          <tr><td class="n">7</td><td>Trip completed</td><td>Passenger</td><td class="ok">Canvas 7</td></tr>
+          <tr><td class="n">8</td><td>Activity</td><td>Passenger · adapted for Driver</td><td class="ok">Canvas 8</td></tr>
+          <tr><td class="n">9</td><td>Wallet</td><td>Passenger · adapted for Driver</td><td class="ok">Canvas 9</td></tr>
+          <tr><td class="n">10</td><td>Account</td><td>Passenger · adapted for Driver</td><td class="ok">Canvas 10</td></tr>
+          <tr><td class="n">11</td><td>Unknown (likely onboarding slides)</td><td>Passenger</td><td class="todo">Not in set</td></tr>
+          <tr><td class="n">12–16</td><td>Sign in, Create account, Verify phone, OTP, Create password</td><td>Passenger · Driver</td><td class="ok">Canvases 12–16</td></tr>
+          <tr><td class="n">17–19</td><td>Location, Notifications, Complete profile</td><td>Passenger · Driver</td><td class="ok">Canvases 17–19</td></tr>
+          <tr><td class="n">20</td><td>Unknown (likely "You're all set")</td><td>Passenger</td><td class="todo">Not in set</td></tr>
+          <tr><td class="n">D</td><td>Service &amp; zone, Documents, Vehicle, Under review, Driver home, Ride request, Navigate to pickup, Collect payment, Withdraw</td><td>Driver</td><td class="todo">New, in the same style, green lead colour</td></tr>
+          <tr><td class="n">A</td><td>Dashboard, Live rides, Live map, SOS, Approvals, Payments, Zones &amp; fares, Reports</td><td>Admin web</td><td class="todo">Restyle existing Laravel admin in brand colours</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- DECISIONS -->
+  <section id="decisions">
+    <div class="sec-head">
+      <p class="eyebrow">Before I build</p>
+      <h2>Decisions I need from you</h2>
+    </div>
+    <div class="decisions">
+      <div class="dec"><h3>1 · Driver offers or instant match?</h3><p>The current backend lets drivers send offers and the passenger picks one. Your Location mockup shows "Driver nearby, 3 min away", which reads more like Uber's instant match.</p><p class="rec">Recommendation: keep offers (the backend already supports it, and passengers in Freetown are used to negotiating), but pre-fill the offer at the estimated fare so most drivers just tap Accept.</p></div>
+      <div class="dec"><h3>2 · Rebuild inside the existing apps, or start fresh?</h3><p>Flutter/Rider and Flutter/Driver already talk to the live API at passenga.dorwei.com.</p><p class="rec">Recommendation: replace the screens inside the existing apps and keep their API, Pusher and payment code. Faster, and nothing on the server changes.</p></div>
+      <div class="dec"><h3>3 · Admin panel</h3><p>Monitoring needs a web panel. Options: restyle the current Laravel admin to the FreeTongRide look, or build a new Flutter Web admin.</p><p class="rec">Recommendation: restyle the Laravel admin and add the Live map and SOS banner. A new Flutter admin would mean rebuilding every page.</p></div>
+      <div class="dec"><h3>4 · Missing canvases 2–5, 11 and 20</h3><p>Send them if they exist; otherwise I design them to match.</p></div>
+    </div>
+  </section>
+
+  <footer>FreeTongRide · customer journey v1 · statuses and API names come from the current backend (OvoRide base, branch passenga/phase-6).</footer>
+</div>
