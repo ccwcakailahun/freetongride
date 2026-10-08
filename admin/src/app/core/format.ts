@@ -35,6 +35,12 @@ export class LePipe implements PipeTransform {
   transform(v: number | null | undefined, signed = false) { return le(v, signed); }
 }
 
+/** 1284 -> "1,284" */
+@Pipe({ name: 'count' })
+export class CountPipe implements PipeTransform {
+  transform(v: number | null | undefined) { return new Intl.NumberFormat('en-US').format(v ?? 0); }
+}
+
 @Pipe({ name: 'phone' })
 export class PhonePipe implements PipeTransform {
   transform(v?: string | null) { return phone(v); }

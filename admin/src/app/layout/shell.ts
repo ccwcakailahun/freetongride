@@ -68,7 +68,7 @@ interface NavItem { path: string; label: string; icon: string; badge?: () => num
     .brand b { color: #fff; font-size: 19px; font-weight: 800; letter-spacing: -0.03em; display: block; }
     .brand em { font-style: normal; color: #5fe39b; }
     .brand small { color: #8f9bc7; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
-    nav { display: grid; gap: 2px; flex: 1; overflow-y: auto; }
+    nav { display: grid; gap: 2px; flex: 1; overflow-y: auto; align-content: start; }
     .group { margin: 14px 10px 6px; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6f7cab; font-weight: 700; }
     nav a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; color: #c9d1ee; font-weight: 600; font-size: 14px; }
     nav a:hover { background: var(--navy-2); color: #fff; }

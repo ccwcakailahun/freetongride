@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AdminApi, errorText } from '../core/api';
-import { AgoPipe, LePipe } from '../core/format';
+import { AgoPipe, CountPipe, LePipe } from '../core/format';
 import { Dashboard, Ride } from '../core/models';
 import { Realtime } from '../core/realtime';
 import { Icon } from '../layout/icon';
@@ -10,7 +10,7 @@ import { Avatar, RideStatusPill } from './shared';
 
 @Component({
   selector: 'ftr-dashboard',
-  imports: [RouterLink, LePipe, AgoPipe, Icon, RideStatusPill, Avatar],
+  imports: [RouterLink, LePipe, AgoPipe, CountPipe, Icon, RideStatusPill, Avatar],
   template: `
     <div class="page">
       <div class="page-head">
@@ -42,18 +42,18 @@ import { Avatar, RideStatusPill } from './shared';
             <span class="icon" style="background:var(--purple-soft);color:var(--purple)"><ftr-icon name="wallet" /></span>
           </a>
           <a class="card kpi" routerLink="/live">
-            <span class="label">Drivers online</span><span class="value">{{ d.driversOnline }}</span>
-            <span class="sub">{{ d.activeRides }} on a trip · {{ d.searchingRides }} requests open</span>
+            <span class="label">Drivers online</span><span class="value">{{ d.driversOnline | count }}</span>
+            <span class="sub">{{ d.activeRides }} on a trip · {{ d.searchingRides }} {{ d.searchingRides === 1 ? 'request' : 'requests' }} open</span>
             <span class="icon" style="background:var(--green-soft);color:var(--green)"><ftr-icon name="bolt" /></span>
           </a>
         </div>
 
         <div class="grid kpis">
-          <div class="card kpi"><span class="label">Rides today</span><span class="value">{{ d.ridesToday }}</span>
+          <div class="card kpi"><span class="label">Rides today</span><span class="value">{{ d.ridesToday | count }}</span>
             <span class="sub">{{ d.completedToday }} completed · {{ d.cancelledToday }} cancelled</span></div>
           <div class="card kpi"><span class="label">Fares today</span><span class="value">{{ d.gmvToday | le }}</span><span class="sub">Completed trips</span></div>
           <div class="card kpi"><span class="label">Commission today</span><span class="value" style="color:var(--green)">{{ d.commissionToday | le }}</span><span class="sub">Platform revenue</span></div>
-          <div class="card kpi"><span class="label">Passengers</span><span class="value">{{ d.passengersTotal }}</span><span class="sub">+{{ d.newPassengersToday }} today · {{ d.driversTotal }} drivers</span></div>
+          <div class="card kpi"><span class="label">Passengers</span><span class="value">{{ d.passengersTotal | count }}</span><span class="sub">+{{ d.newPassengersToday | count }} today · {{ d.driversTotal | count }} drivers</span></div>
         </div>
 
         <div class="grid two">
