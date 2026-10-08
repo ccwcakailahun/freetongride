@@ -75,11 +75,11 @@ public class DbSeeder(AppDbContext db, IPasswordService passwords, SeedSettings 
         {
             UserId = mohamed.Id, Status = DriverStatus.Approved, ApprovedAt = DateTime.UtcNow, ServiceId = car.Id,
             VehicleMake = "Toyota", VehicleModel = "Corolla", VehicleColor = "White", VehicleYear = 2016, PlateNumber = "AFS 284",
-            IsOnline = true, Lat = 8.4225, Lng = -13.2878, LastSeenAt = DateTime.UtcNow, CompletedTrips = 320
+            IsOnline = true, Lat = 8.4790, Lng = -13.2880, LastSeenAt = DateTime.UtcNow, CompletedTrips = 320
         });
         db.SavedPlaces.AddRange(
-            new SavedPlace { UserId = mariama.Id, Label = "Home", Address = "Lumley Beach, Freetown", Lat = 8.4207, Lng = -13.2930 },
-            new SavedPlace { UserId = mariama.Id, Label = "Work", Address = "Freetown Central", Lat = 8.4840, Lng = -13.2299 });
+            new SavedPlace { UserId = mariama.Id, Label = "Home", Address = "Lumley Beach, Freetown", Lat = 8.4760, Lng = -13.2920 },
+            new SavedPlace { UserId = mariama.Id, Label = "Work", Address = "Freetown Central", Lat = 8.4872, Lng = -13.2346 });
         db.WalletTransactions.Add(new WalletTransaction { UserId = mariama.Id, Type = WalletTxType.TopUp, Amount = 150, BalanceAfter = 150, Description = "Added funds (Orange Money)", Reference = "DEMO" });
         db.Coupons.Add(new Coupon { Code = "WELCOME10", AmountOff = 10, IsActive = true });
         await db.SaveChangesAsync(ct);

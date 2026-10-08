@@ -189,9 +189,9 @@ class _MapCard extends StatelessWidget {
     return ListenableBuilder(
       listenable: here,
       builder: (context, _) {
-        final me = here.position ?? const LatLng(8.4400, -13.2700);
+        final me = here.position ?? const LatLng(8.4760, -13.2920);
         final work = places.where((p) => p.label == 'Work').firstOrNull;
-        final dest = work != null ? LatLng(work.lat, work.lng) : const LatLng(8.4844, -13.2344);
+        final dest = work != null ? LatLng(work.lat, work.lng) : const LatLng(8.4872, -13.2346);
         return Container(
           height: 210,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), boxShadow: ftrSoftShadow),
@@ -204,7 +204,7 @@ class _MapCard extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(40, 40, 170, 50),
               markers: [
                 if (here.position != null) youAreHere(me),
-                pickupPin(here.position == null ? const LatLng(8.4207, -13.2930) : me, label: here.position == null ? 'Lumley Beach' : 'You are here'),
+                pickupPin(here.position == null ? const LatLng(8.4760, -13.2920) : me, label: here.position == null ? 'Lumley Beach' : 'You are here'),
                 dropoffPin(dest, label: work != null ? 'Work' : 'Freetown Central'),
               ],
             ),
@@ -269,7 +269,7 @@ class _Destination extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final f = from ?? const LatLng(8.4207, -13.2930);
+    final f = from ?? const LatLng(8.4760, -13.2920);
     final minutes = (const Distance().as(LengthUnit.Kilometer, f, LatLng(place.lat, place.lng)) * 1.3 / 22 * 60).ceil().clamp(3, 90);
     return FtrCard(
       padding: EdgeInsets.zero,

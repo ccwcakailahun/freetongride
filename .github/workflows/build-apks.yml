@@ -1,0 +1,74 @@
+name: Build mobile apps
+
+# Builds installable Android APKs for both apps (and optionally an unsigned iOS build check).
+# Set the repository variable API_URL (Settings → Secrets and variables → Actions → Variables)
+# to the public address of the API, e.g. https://api.freetongride.com, before installing on phones.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ios:
+        description: Also check that the iOS apps compile (macOS runner, slower)
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/build-apks.yml'
+
+jobs:
+  android:
+    name: Android APK (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [passenger, driver]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.5
+          channel: stable
+          cache: true
+      - name: Build APK
+        working-directory: mobile/${{ matrix.app }}
+        env:
+          API_URL: ${{ vars.API_URL }}
+          MAP_TILES_URL: ${{ vars.MAP_TILES_URL }}
+        run: |
+          flutter pub get
+          DEFINES=""
+          [ -n "$API_URL" ] && DEFINES="$DEFINES --dart-define=API_URL=$API_URL"
+          [ -n "$MAP_TILES_URL" ] && DEFINES="$DEFINES --dart-define=MAP_TILES_URL=$MAP_TILES_URL"
+          # Test builds are signed with the debug key; add a release keystore before publishing to Play Store.
+          flutter build apk --release --target-platform android-arm,android-arm64 $DEFINES
+          cp build/app/outputs/flutter-apk/app-release.apk ../../FreeTongRide-${{ matrix.app }}.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FreeTongRide-${{ matrix.app }}-apk
+          path: FreeTongRide-${{ matrix.app }}.apk
+          retention-days: 14
+
+  ios:
+    name: iOS compile check (${{ matrix.app }})
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.ios }}
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        app: [passenger, driver]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.5
+          channel: stable
+          cache: true
+      - working-directory: mobile/${{ matrix.app }}
+        run: |
+          flutter pub get
+          flutter build ios --release --no-codesign

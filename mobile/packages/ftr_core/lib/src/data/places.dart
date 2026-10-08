@@ -9,37 +9,37 @@ import 'models.dart';
 /// Well-known places in Freetown, used for instant search and "Popular destinations".
 /// Coordinates are approximate centres.
 abstract final class FreetownPlaces {
-  static const centre = LatLng(8.4657, -13.2317);
+  static const centre = LatLng(8.4750, -13.2500);
 
   static const all = <Place>[
-    Place('Freetown Central', 8.4844, -13.2344, subtitle: 'Cotton Tree, Siaka Stevens Street'),
-    Place('Lumley Beach', 8.4207, -13.2930, subtitle: 'Lumley Beach Road'),
-    Place('Aberdeen', 8.4400, -13.2810, subtitle: 'Aberdeen, Western Area'),
+    Place('Freetown Central', 8.4872, -13.2346, subtitle: 'Cotton Tree, Siaka Stevens Street'),
+    Place('Lumley Beach', 8.476, -13.292, subtitle: 'Lumley Beach Road'),
+    Place('Aberdeen', 8.4955, -13.2867, subtitle: 'Aberdeen, Western Area'),
     Place('Kissy', 8.4734, -13.1946, subtitle: 'East End, Freetown'),
-    Place('Wilberforce', 8.4677, -13.2575, subtitle: 'Wilberforce, West End'),
-    Place('Congo Cross', 8.4706, -13.2546, subtitle: 'Main Motor Road'),
-    Place('Lumley', 8.4167, -13.2711, subtitle: 'Lumley Roundabout'),
-    Place('Murray Town', 8.4600, -13.2700, subtitle: 'Murray Town, West End'),
-    Place('Hill Station', 8.4590, -13.2390, subtitle: 'Hill Station, Freetown'),
-    Place('Brookfields', 8.4710, -13.2440, subtitle: 'Brookfields, Freetown'),
-    Place('Tower Hill', 8.4790, -13.2330, subtitle: 'Parliament, Tower Hill'),
-    Place('Goderich', 8.4050, -13.2880, subtitle: 'Goderich, Western Area'),
-    Place('Juba', 8.4290, -13.2550, subtitle: 'Juba Hill'),
-    Place('Regent', 8.4230, -13.2200, subtitle: 'Regent, Mountain Rural'),
+    Place('Wilberforce', 8.4754, -13.2636, subtitle: 'Wilberforce, West End'),
+    Place('Congo Cross', 8.4832, -13.2589, subtitle: 'Main Motor Road'),
+    Place('Lumley', 8.456, -13.2714, subtitle: 'Lumley Roundabout'),
+    Place('Murray Town', 8.4916, -13.2653, subtitle: 'Murray Town, West End'),
+    Place('Hill Station', 8.4594, -13.2539, subtitle: 'Hill Station, Freetown'),
+    Place('Brookfields', 8.47, -13.2442, subtitle: 'Brookfields, Freetown'),
+    Place('Tower Hill', 8.4869, -13.2325, subtitle: 'Parliament, Tower Hill'),
+    Place('Goderich', 8.433, -13.2889, subtitle: 'Goderich, Western Area'),
+    Place('Juba', 8.4475, -13.2702, subtitle: 'Juba Hill'),
+    Place('Regent', 8.4355, -13.2185, subtitle: 'Regent, Mountain Rural'),
     Place('Wellington', 8.4469, -13.1617, subtitle: 'Wellington, East End'),
-    Place('Calaba Town', 8.4380, -13.1530, subtitle: 'Calaba Town, East End'),
-    Place('Fourah Bay College', 8.4799, -13.2183, subtitle: 'Mount Aureol'),
-    Place('National Stadium', 8.4690, -13.2450, subtitle: 'Brookfields'),
-    Place('Big Market', 8.4880, -13.2350, subtitle: 'Wallace Johnson Street'),
-    Place('Connaught Hospital', 8.4888, -13.2367, subtitle: 'Wilberforce Street'),
+    Place('Calaba Town', 8.438, -13.153, subtitle: 'Calaba Town, East End'),
+    Place('Fourah Bay College', 8.4779, -13.221, subtitle: 'Mount Aureol'),
+    Place('National Stadium', 8.4796, -13.249, subtitle: 'Brookfields'),
+    Place('Big Market', 8.4898, -13.2366, subtitle: 'Wallace Johnson Street'),
+    Place('Connaught Hospital', 8.4887, -13.2378, subtitle: 'Wilberforce Street'),
   ];
 
   /// Popular destinations on the Home screen, with their mockup photos.
   static const popular = <(Place, String)>[
-    (Place('Aberdeen', 8.4400, -13.2810), 'dest_aberdeen.png'),
-    (Place('Freetown Central', 8.4844, -13.2344), 'dest_freetown_central.png'),
+    (Place('Aberdeen', 8.4955, -13.2867), 'dest_aberdeen.png'),
+    (Place('Freetown Central', 8.4872, -13.2346), 'dest_freetown_central.png'),
     (Place('Kissy', 8.4734, -13.1946), 'dest_kissy.png'),
-    (Place('Wilberforce', 8.4677, -13.2575), 'dest_wilberforce.png'),
+    (Place('Wilberforce', 8.4754, -13.2636), 'dest_wilberforce.png'),
   ];
 }
 

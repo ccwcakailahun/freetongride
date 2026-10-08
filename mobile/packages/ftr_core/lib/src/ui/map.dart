@@ -6,7 +6,22 @@ import 'package:latlong2/latlong.dart' hide Path;
 
 import 'theme.dart';
 
-/// Light street map in the style of the mockups (OpenStreetMap data, CARTO Voyager tiles).
+/// Map tiles. OpenStreetMap's servers are fine for development and light use; for production pass
+/// `--dart-define=MAP_TILES_URL=...` with a provider URL and key (MapTiler, Stadia, etc.).
+const mapTilesUrl = String.fromEnvironment('MAP_TILES_URL', defaultValue: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png');
+
+/// Softens the standard OSM colours toward the light, airy look of the mockups.
+Widget _softTiles(BuildContext context, Widget tile, TileImage image) => ColorFiltered(
+      colorFilter: const ColorFilter.matrix([
+        0.78, 0.12, 0.05, 0, 22, //
+        0.08, 0.82, 0.05, 0, 22,
+        0.08, 0.12, 0.75, 0, 30,
+        0, 0, 0, 1, 0,
+      ]),
+      child: tile,
+    );
+
+/// Light street map in the style of the mockups (OpenStreetMap data).
 class FtrMap extends StatelessWidget {
   const FtrMap({
     super.key,
@@ -45,10 +60,9 @@ class FtrMap extends StatelessWidget {
       ),
       children: [
         TileLayer(
-          urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-          subdomains: const ['a', 'b', 'c', 'd'],
-          retinaMode: RetinaMode.isHighDensity(context),
+          urlTemplate: mapTilesUrl,
           userAgentPackageName: 'com.freetongride.app',
+          tileBuilder: _softTiles,
         ),
         if (route != null && route!.length > 1)
           PolylineLayer(polylines: [
@@ -72,7 +86,7 @@ class _Attribution extends StatelessWidget {
           margin: const EdgeInsets.all(4),
           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
           color: Colors.white.withValues(alpha: 0.7),
-          child: Text('© OpenStreetMap © CARTO', style: FtrText.small.copyWith(fontSize: 9)),
+          child: Text('© OpenStreetMap contributors', style: FtrText.small.copyWith(fontSize: 9)),
         ),
       );
 }
